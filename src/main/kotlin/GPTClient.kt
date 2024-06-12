@@ -1,9 +1,11 @@
 import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
 import org.json.JSONObject
 
 class GPTClient(private val apiKey: String) {
     private val client = OkHttpClient()
+    var baseUrl: String = "https://api.openai.com/v1/chat/completions"
 
     fun getResponse(prompt: String): String? {
         val requestBody = JSONObject()
@@ -13,10 +15,11 @@ class GPTClient(private val apiKey: String) {
             ))
             .put("max_tokens", 100)
             .toString()
+            .toRequestBody("application/json".toMediaType())
 
         val request = Request.Builder()
-            .url("https://api.openai.com/v1/chat/completions")
-            .post(RequestBody.create("application/json".toMediaTypeOrNull(), requestBody))
+            .url(baseUrl)
+            .post(requestBody)
             .addHeader("Authorization", "Bearer $apiKey")
             .build()
 
